@@ -54,11 +54,12 @@ Vagrant.configure("2") do |config|
   config.vm.provision :shell, :path => "puphpet/shell/update-puppet.sh"
   config.vm.provision :shell, :path => "puphpet/shell/r10k.sh"
 
-  config.vm.provision :puppet do |puppet|
+  config.vm.provision :puppet, :options => ['--debug', '--evaltrace', '--verbose'] do |puppet|
     ssh_username = !data['ssh']['username'].nil? ? data['ssh']['username'] : "vagrant"
     puppet.facter = {
       "ssh_username"     => "#{ssh_username}",
       "provisioner_type" => ENV['VAGRANT_DEFAULT_PROVIDER'],
+      "vm_target_key"    => 'vagrantfile-local',
     }
     puppet.manifests_path = "#{data['vm']['provision']['puppet']['manifests_path']}"
     puppet.manifest_file = "#{data['vm']['provision']['puppet']['manifest_file']}"
@@ -113,5 +114,4 @@ Vagrant.configure("2") do |config|
   end
 
 end
-
 

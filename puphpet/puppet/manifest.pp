@@ -2,8 +2,9 @@
 
 if $server_values == undef {
   $server_values = hiera('server', false)
+} if $vm_values == undef {
+  $vm_values = hiera($::vm_target_key, false)
 }
-
 # Ensure the time is accurate, reducing the possibilities of apt repositories
 # failing for invalid certificates
 class { 'ntp': }
@@ -213,6 +214,90 @@ define add_dotdeb ($release){
     key               => '89DF5277',
     key_server        => 'keys.gnupg.net',
     include_src       => true
+  }
+}
+
+# Begin open ports for Iptables
+if $::osfamily == 'redhat'
+  and has_key($vm_values, 'vm')
+  and has_key($vm_values['vm'], 'network')
+  and has_key($vm_values['vm']['network'], 'forwarded_port')
+{
+  create_resources( iptables_port, $vm_values['vm']['network']['forwarded_port'] )
+}
+
+define iptables_port (
+  $host,
+  $guest,
+) {
+  if ( ! defined(Iptables::Allow["tcp/${guest}"]) ) {
+    iptables::allow { "tcp/${guest}":
+      port     => $guest,
+      protocol => 'tcp'
+    }
+  }
+}
+
+## Begin MailCatcher manifest
+
+if $mailcatcher_values == undef {
+  $mailcatcher_values = hiera('mailcatcher', false)
+}
+
+if hash_key_equals($mailcatcher_values, 'install', 1) {
+  if ! defined(Package['tilt']) {
+    package { 'tilt':
+      ensure   => '1.3',
+      provider => 'gem',
+      before   => Class['mailcatcher']
+    }
+  }
+
+  create_resources('class', { 'mailcatcher' => $mailcatcher_values['settings'] })
+
+  if $::osfamily == 'redhat'
+    and ! defined(Iptables::Allow["tcp/${mailcatcher_values['settings']['smtp_port']}"])
+  {
+    iptables::allow { "tcp/${mailcatcher_values['settings']['smtp_port']}":
+      port     => $mailcatcher_values['settings']['smtp_port'],
+      protocol => 'tcp'
+    }
+  }
+
+  if $::osfamily == 'redhat'
+    and ! defined(Iptables::Allow["tcp/${mailcatcher_values['settings']['http_port']}"])
+  {
+    iptables::allow { "tcp/${mailcatcher_values['settings']['http_port']}":
+      port     => $mailcatcher_values['settings']['http_port'],
+      protocol => 'tcp'
+    }
+  }
+
+  if ! defined(Class['supervisord']) {
+    class { 'supervisord':
+      install_pip => true,
+    }
+  }
+
+  $supervisord_mailcatcher_options = sort(join_keys_to_values({
+    ' --smtp-ip'   => $mailcatcher_values['settings']['smtp_ip'],
+    ' --smtp-port' => $mailcatcher_values['settings']['smtp_port'],
+    ' --http-ip'   => $mailcatcher_values['settings']['http_ip'],
+    ' --http-port' => $mailcatcher_values['settings']['http_port']
+  }, ' '))
+
+  $supervisord_mailcatcher_cmd = "mailcatcher ${supervisord_mailcatcher_options} -f  >> ${mailcatcher_values['settings']['log']}"
+
+  supervisord::program { 'mailcatcher':
+    command     => $supervisord_mailcatcher_cmd,
+    priority    => '100',
+    user        => 'mailcatcher',
+    autostart   => true,
+    autorestart => true,
+    environment => {
+      'PATH' => "/bin:/sbin:/usr/bin:/usr/sbin:${mailcatcher_values['settings']['path']}"
+    },
+    require => Package['mailcatcher']
   }
 }
 
@@ -786,11 +871,28 @@ if $mysql_values == undef {
   $nginx_values = hiera('nginx', false)
 }
 
+include 'mysql::params'
+
 if hash_key_equals($mysql_values, 'install', 1) {
   if hash_key_equals($apache_values, 'install', 1) or hash_key_equals($nginx_values, 'install', 1) {
     $mysql_webserver_restart = true
   } else {
     $mysql_webserver_restart = false
+  }
+
+  if $::osfamily == 'redhat' {
+    exec { 'mysql-community-repo':
+      command => 'yum -y --nogpgcheck install "http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm" && touch /.puphpet-stuff/mysql-community-release',
+      creates => '/.puphpet-stuff/mysql-community-release'
+    }
+
+    $mysql_server_require             = Exec['mysql-community-repo']
+    $mysql_server_server_package_name = 'mysql-community-server'
+    $mysql_server_client_package_name = 'mysql-community-client'
+  } else {
+    $mysql_server_require             = []
+    $mysql_server_server_package_name = $mysql::params::server_package_name
+    $mysql_server_client_package_name = $mysql::params::client_package_name
   }
 
   if hash_key_equals($php_values, 'install', 1) {
@@ -805,7 +907,14 @@ if hash_key_equals($mysql_values, 'install', 1) {
 
   if $mysql_values['root_password'] {
     class { 'mysql::server':
+      package_name  => $mysql_server_server_package_name,
       root_password => $mysql_values['root_password'],
+      require       => $mysql_server_require
+    }
+
+    class { 'mysql::client':
+      package_name => $mysql_server_client_package_name,
+      require      => $mysql_server_require
     }
 
     if is_hash($mysql_values['databases']) and count($mysql_values['databases']) > 0 {
@@ -948,6 +1057,13 @@ if hash_key_equals($postgresql_values, 'install', 1) {
       postgres_password => $postgresql_values['settings']['root_password'],
       version           => $postgresql_values['settings']['version'],
       require           => Group[$postgresql_values['settings']['user_group']]
+    }->
+    exec { 'utf8 postgres':
+      # workaround for bug in Puppet
+      command => "pg_dropcluster --stop 9.3 main ; pg_createcluster --start --locale en_US.UTF-8 9.3 main",
+      unless => 'sudo -u postgres psql -t -c "\1" | grep template1 | grep -q UTF',
+      require => Class['postgresql::server'],
+      path => ['/bin', '/sbin', '/usr/bin', '/usr/sbin']
     }
 
     if is_hash($postgresql_values['databases']) and count($postgresql_values['databases']) > 0 {
@@ -979,6 +1095,7 @@ if hash_key_equals($postgresql_values, 'install', 1) {
 }
 
 define postgresql_db (
+  $name,
   $user,
   $password,
   $grant,
@@ -988,10 +1105,11 @@ define postgresql_db (
     fail( 'PostgreSQL DB requires that name, user, password and grant be set. Please check your settings!' )
   }
 
-  postgresql::server::db { $name:
-    user     => $user,
-    password => $password,
-    grant    => $grant
+  postgresql::server::role { $user:
+    password_hash => postgresql_password($user, $password),
+  }~>
+  postgresql::server::database { $name:
+    owner => $user,
   }
 
   if $sql_file {
