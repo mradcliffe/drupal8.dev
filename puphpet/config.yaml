@@ -35,10 +35,21 @@ vagrantfile-local:
                     - '--hiera_config /vagrant/puphpet/puppet/hiera.yaml'
                     - '--parser future'
         synced_folder:
-            fNkuZLHQHV3z:
-                source: ./
+            www:
+                source: www
                 target: /var/www
-                nfs: 'true'
+                sync_type: 'default'
+                mount_options:
+                    - dmode: 775
+                    - fmode: 664
+                rsync:
+                    args:
+                        - '-rtlDPvcz'
+                        - '--delete'
+                    exclude:
+                        - '.vagrant/'
+                        - '.git/'
+                    auto: true
         usable_port_range: 2200..2250
     ssh:
         host: null
@@ -53,7 +64,9 @@ vagrantfile-local:
     vagrant:
         host: detect
 server:
-    packages: {  }
+    packages:
+        - samba
+        - vim
     dot_files:
         -
             bash_aliases: null
