@@ -1,2 +1,6 @@
-www/drupal8.dev
+www/drupal8.pgsql.dev
+www/drupal8.mysql.dev
+index.html
 .vagrant
+.DS_store
+Thumbs.db
