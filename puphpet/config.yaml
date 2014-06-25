@@ -17,7 +17,7 @@ vagrantfile-local:
                     host: '3306'
                     guest: '3306'
                 pgsql:
-                    host: '5432'
+                    host: '15432'
                     guest: '5432'
         provider:
             virtualbox:
@@ -36,19 +36,22 @@ vagrantfile-local:
                     - '--parser future'
         synced_folder:
             www:
+                id: vagrant-root
                 source: www
                 target: /var/www
-                sync_type: 'default'
+                sync_type: 'rsync'
                 mount_options:
                     - dmode: 775
                     - fmode: 664
                 rsync:
                     args:
                         - '-rtlDPvcz'
-                        - '--delete'
                     exclude:
                         - '.vagrant/'
                         - '.git/'
+                        - 'sites/all/vendor/composer/'
+                        - 'sites/default/files/'
+                        - '.swp'
                     auto: true
         usable_port_range: 2200..2250
     ssh:
@@ -154,12 +157,14 @@ php:
             - intl
             - mcrypt
             - gd
+            - curl
         pear: {  }
         pecl:
             - pecl_http
     ini:
         display_errors: On
         error_reporting: '-1'
+        memory_limit: '256M'
         session.save_path: /var/lib/php/session
     timezone: America/Chicago
 xdebug:
