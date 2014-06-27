@@ -100,7 +100,7 @@ apache:
             servername: drupal8.mysql.dev
             serveraliases:
                 - www.drupal8.mysql.dev
-            docroot: /var/www/drupal8.mysql.dev
+            docroot: /var/www/drupal8.dev
             port: '80'
             override:
                 - All
@@ -117,7 +117,7 @@ apache:
             servername: drupal8.pgsql.dev
             serveraliases:
                 - www.drupal8.pgsql.dev
-            docroot: /var/www/drupal8.pgsql.dev
+            docroot: /var/www/drupal8.dev
             port: '80'
             override:
                 - All
