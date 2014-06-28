@@ -1125,6 +1125,78 @@ define postgresql_db (
   }
 }
 
+## Begin SQLite manifest
+
+if $sqlite_values == undef {
+  $sqlite_values = hiera('sqlite', false)
+} if $php_values == undef {
+  $php_values = hiera('php', false)
+} if $apache_values == undef {
+  $apache_values = hiera('apache', false)
+} if $mailcatcher_values == undef {
+  $mailcatcher_values = hiera('mailcatcher', false)
+}
+
+if hash_key_equals($sqlite_values, 'install', 1) {
+
+  if hash_key_equals($php_values, 'install', 1) {
+    $sqlite_php_installed = true
+    $sqlite_php_package   = 'php'
+  } elsif hash_key_equals($hhvm_values, 'install', 1) {
+    $sqlite_php_installed = true
+    $sqlite_php_package   = 'hhvm'
+  } else {
+    $sqlite_php_installed = false
+  }
+
+  if hash_key_equals($mailcatcher_values, 'install', 1) {
+    $sqlite_installed = true
+  } else {
+    $sqlite_installed = false
+  }
+
+  # mailcatcher and sqlite are not compatible.
+  if !$sqlite_installed {
+    class { 'sqlite': }
+  }
+
+  # ensure directory created
+  file { '/var/lib/sqlite':
+    ensure => directory,
+    owner  => root,
+    group  => vagrant,
+    mode   => '664'
+  }
+
+  if is_hash($sqlite_values['databases']) and count($sqlite_values['databases']) > 0 {
+    create_resources(sqlite_db, $sqlite_values['databases'])
+  }
+
+  if $sqlite_php_installed and $sqlite_php_package == 'php' and ! defined(Php::Module['sqlite']) {
+    php::module { 'sqlite':
+      service_autorestart => true,
+    }
+  }
+}
+
+define sqlite_db (
+  $name,
+  $owner,
+  $group = 0,
+  $mode = '775'
+) {
+  if $name == '' or $owner == '' or $mode == '' {
+    fail( 'SQLite requires that name, owner, group, and mode be set. Please check your settings!' )
+  }
+
+  sqlite::db { $name:
+    owner => $owner,
+    group => $group,
+    mode => $mode
+  }
+}
+
+
 ## Begin MariaDb manifest
 
 if $mariadb_values == undef {

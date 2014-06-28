@@ -130,6 +130,23 @@ apache:
             ssl_key: ''
             ssl_chain: ''
             ssl_certs_dir: ''
+        sqlite:
+            servername: drupal8.sqlite.dev
+            serveraliases:
+                - www.drupal8.sqlite.dev
+            docroot: /var/www/drupal8.dev
+            port: '80'
+            override:
+                - All
+            options:
+                - Indexes
+                - FollowSymLinks
+                - MultiViews
+            custom_fragment: ''
+            ssl_cert: ''
+            ssl_key: ''
+            ssl_chain: ''
+            ssl_certs_dir: ''
     mod_pagespeed: 0
     mod_spdy: 0
 nginx:
@@ -209,6 +226,14 @@ postgresql:
             grant: ALL
             sql_file: ''
     adminer: 0
+sqlite:
+    install: '1'
+    databases:
+        drupal8:
+            name: drupal8
+            owner: vagrant
+            group: vagrant
+            mode: '775'
 mariadb:
     install: 0
     root_password: '123'

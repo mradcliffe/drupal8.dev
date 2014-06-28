@@ -17,7 +17,7 @@ vagrant up
 
 ### 2. Add VM to hosts file and flush DNS cache.
 
-- Add `192.168.56.101 drupal8.pgsql.dev drupal8.mysql.dev` to /etc/hosts on the Host machine, and flush cache.
+- Add `192.168.56.101 drupal8.sqlite.dev drupal8.pgsql.dev drupal8.mysql.dev` to /etc/hosts on the Host machine, and flush cache.
 
 ### 4. Install Drupal 8
 - Use `drush` or [your browser](http://drupal8.mysql.dev)
@@ -40,3 +40,8 @@ vagrant up
 * Git
 * VirtualBox 4.3.x
 * Vagrant 1.5.x
+
+## Troubleshooting
+
+* Issue with mailcatcher puppet and sqlite puppet reositories being incompatible?
+* mradcliffe/puppetlabs-postgresql needs to be tweaked a bit.
