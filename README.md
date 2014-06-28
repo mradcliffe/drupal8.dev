@@ -7,19 +7,17 @@ Virtual Machine for drupal 8 development (VirtualBox 4.3)
 
 ### 1. Clone this repo and Drupal 8.
 ```bash
-$ git clone https://github.com/mradcliffe/drupal8.dev.git
-$ cd drupal8.dev
-$ mkdir www
-$ cd www
-$ git clone --branch 8.x http://git.drupal.org/project/drupal.git drupal8.dev
-$ cd ..
-$ vagrant up
+git clone https://github.com/mradcliffe/drupal8.dev.git
+cd drupal8.dev
+cd www
+git clone --branch 8.x http://git.drupal.org/project/drupal.git drupal8.dev
+cd ..
+vagrant up
 ```
 
 ### 2. Add VM to hosts file and flush DNS cache.
-```bash
-  sudo echo "192.168.56.101 drupal8.pgsql.dev drupal8.mysql.dev" >> /etc/hosts
-```
+
+- Add `192.168.56.101 drupal8.pgsql.dev drupal8.mysql.dev` to /etc/hosts on the Host machine, and flush cache.
 
 ### 4. Install Drupal 8
 - Use `drush` or [your browser](http://drupal8.mysql.dev)

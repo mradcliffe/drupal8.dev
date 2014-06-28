@@ -1,5 +1,4 @@
-www/drupal8.pgsql.dev
-www/drupal8.mysql.dev
+www/drupal8.dev
 index.html
 .vagrant
 .DS_store
