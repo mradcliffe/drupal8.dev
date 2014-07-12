@@ -1133,6 +1133,8 @@ if $sqlite_values == undef {
   $php_values = hiera('php', false)
 } if $apache_values == undef {
   $apache_values = hiera('apache', false)
+} if $nginx_values == undef {
+  $nginx_values = hiera('nginx', false)
 } if $mailcatcher_values == undef {
   $mailcatcher_values = hiera('mailcatcher', false)
 }
@@ -1160,14 +1162,6 @@ if hash_key_equals($sqlite_values, 'install', 1) {
     class { 'sqlite': }
   }
 
-  # ensure directory created
-  file { '/var/lib/sqlite':
-    ensure => directory,
-    owner  => root,
-    group  => vagrant,
-    mode   => '664'
-  }
-
   if is_hash($sqlite_values['databases']) and count($sqlite_values['databases']) > 0 {
     create_resources(sqlite_db, $sqlite_values['databases'])
   }
@@ -1177,22 +1171,60 @@ if hash_key_equals($sqlite_values, 'install', 1) {
       service_autorestart => true,
     }
   }
+
+  if hash_key_equals($sqlite_values, 'adminer', 1) and $sqlite_php_installed {
+    if hash_key_equals($apache_values, 'install', 1) {
+      $sqlite_adminer_webroot_location = $puphpet::params::apache_webroot_location
+    } elsif hash_key_equals($nginx_values, 'install', 1) {
+      $sqlite_adminer_webroot_location = $puphpet::params::nginx_webroot_location
+    } else {
+      $sqlite_adminer_webroot_location = $puphpet::params::apache_webroot_location
+    }
+
+    class { 'puphpet::adminer':
+      location    => "${sqlite_adminer_webroot_location}/adminer",
+      owner       => 'www-data',
+      php_package => $sqlite_php_package
+    }
+  }
 }
 
 define sqlite_db (
   $name,
   $owner,
   $group = 0,
-  $mode = '775'
+  $mode = '775',
+  $sql_file = false
 ) {
   if $name == '' or $owner == '' or $mode == '' {
     fail( 'SQLite requires that name, owner, group, and mode be set. Please check your settings!' )
   }
 
+  # ensure user and directory created
+  user { $name:
+    ensure => present,
+    groups => $owner,
+  }->
+  file { '/var/lib/sqlite':
+    ensure => directory,
+    owner  => $name,
+    group  => $group,
+    mode   => '775'
+  }->
   sqlite::db { $name:
     owner => $owner,
     group => $group,
     mode => $mode
+  }
+
+  if $sql_file {
+    exec{ "${name}-import":
+      command     => "cat ${sql_file} | sudo sqlite3 /var/lib/sqlite/${name}.db",
+      logoutput   => true,
+      refreshonly => $refresh,
+      require     => Sqlite::Db[$name],
+      onlyif      => "test -f ${sql_file}"
+    }
   }
 }
 

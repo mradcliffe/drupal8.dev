@@ -234,6 +234,7 @@ sqlite:
             owner: vagrant
             group: vagrant
             mode: '775'
+    adminer: 0
 mariadb:
     install: 0
     root_password: '123'
