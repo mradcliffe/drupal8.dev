@@ -1056,7 +1056,8 @@ if hash_key_equals($postgresql_values, 'install', 1) {
     class { 'postgresql::server':
       postgres_password => $postgresql_values['settings']['root_password'],
       version           => $postgresql_values['settings']['version'],
-      require           => Group[$postgresql_values['settings']['user_group']]
+      require           => Group[$postgresql_values['settings']['user_group']],
+      ensure            => present
     }->
     exec { 'utf8 postgres':
       # workaround for bug in Puppet

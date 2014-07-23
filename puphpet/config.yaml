@@ -50,8 +50,9 @@ vagrantfile-local:
                         - '.vagrant/'
                         - '.git/'
                         - 'sites/all/vendor/composer/'
-                        - 'sites/default/files/'
-                        - '.swp'
+                        - 'sites/*/settings.php'
+                        - 'sites/*/files/'
+                        - '.*.swp'
                     auto: true
         usable_port_range: 2200..2250
     ssh:

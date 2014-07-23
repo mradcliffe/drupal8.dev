@@ -1,4 +1,6 @@
-www/drupal8.dev
+!www/drupal8.dev/sites/sites.php
+!www/drupal8.dev/sites/drupal8.*/.dummyfile
+www
 index.html
 .vagrant
 .DS_store
