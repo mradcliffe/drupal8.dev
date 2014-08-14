@@ -46,6 +46,7 @@ vagrantfile-local:
                 rsync:
                     args:
                         - '-rtlDPvcz'
+                        - '--delete'
                     exclude:
                         - '.vagrant/'
                         - '.git/'
