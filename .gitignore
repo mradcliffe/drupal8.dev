@@ -1,5 +1,4 @@
-!www/drupal8.dev/sites/sites.php
-!www/drupal8.dev/sites/drupal8.*/.dummyfile
+!www/tmp
 www
 index.html
 .vagrant

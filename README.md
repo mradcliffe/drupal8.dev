@@ -14,6 +14,7 @@ git clone https://github.com/mradcliffe/drupal8.dev.git
 cd drupal8.dev
 cd www
 git clone --branch 8.x http://git.drupal.org/project/drupal.git drupal8.dev
+rsync -rtlDPvc tmp/ drupal8.dev/
 cd ..
 vagrant up
 ```
