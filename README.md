@@ -13,7 +13,7 @@ Instructions assume a unix-like machine such as OS X or Linux.
 git clone https://github.com/mradcliffe/drupal8.dev.git
 cd drupal8.dev
 cd www
-git clone --branch 8.x http://git.drupal.org/project/drupal.git drupal8.dev
+git clone --branch 8.0.x http://git.drupal.org/project/drupal.git drupal8.dev
 rsync -rtlDPvc tmp/ drupal8.dev/
 cd ..
 vagrant up
