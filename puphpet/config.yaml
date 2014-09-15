@@ -54,6 +54,8 @@ vagrantfile-local:
                         - 'sites/*/settings.php'
                         - 'sites/*/files/'
                         - '.*.swp'
+                        - 'node_modules'
+                        - '.sass-cache/'
                     auto: true
         usable_port_range: 2200..2250
     ssh:
