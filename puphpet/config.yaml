@@ -50,7 +50,7 @@ vagrantfile-local:
                     exclude:
                         - '.vagrant/'
                         - '.git/'
-                        - 'sites/all/vendor/composer/'
+                        - 'sites/all/vendor/'
                         - 'sites/*/settings.php'
                         - 'sites/*/files/'
                         - '.*.swp'
