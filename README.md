@@ -50,3 +50,4 @@ vagrant up
 
 * Issue with mailcatcher puppet and sqlite puppet reositories being incompatible?
 * mradcliffe/puppetlabs-postgresql needs to be tweaked a bit.
+   * You may notice some puppet warnings, but you may safely ignore these.
