@@ -170,7 +170,7 @@ nginx:
                 - 'APP_ENV dev'
 php:
     install: '1'
-    version: '54'
+    version: '55'
     composer: '1'
     modules:
         php:
@@ -221,7 +221,7 @@ postgresql:
         root_password: '123'
         user_group: postgres
         encoding: UTF8
-        version: '9.3'
+        version: '9.1'
     databases:
         6Jtptq1JqNZe:
             name: drupal8
