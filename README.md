@@ -1,9 +1,11 @@
 drupal8.dev
 ===========
 
-Virtual Machine for drupal 8 development (VirtualBox 4.3)
+Virtual Machine for drupal 8 development (VirtualBox 4.3).
 
 ## Installation
+
+PuPHPet is still going rapid development. If you are updating your virtual machine, it would be best to destroy and re-up.
 
 ### 1. Clone this repo and Drupal 8.
 
@@ -44,10 +46,8 @@ vagrant up
 * Cygwin (Windows only)
 * Git
 * VirtualBox 4.3.x
-* Vagrant 1.5.x
+* Vagrant 1.6.x
 
 ## Troubleshooting
 
 * Issue with mailcatcher puppet and sqlite puppet reositories being incompatible?
-* mradcliffe/puppetlabs-postgresql needs to be tweaked a bit.
-   * You may notice some puppet warnings, but you may safely ignore these.
