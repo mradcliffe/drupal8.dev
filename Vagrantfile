@@ -1,4 +1,6 @@
 dir = File.dirname(File.expand_path(__FILE__))
+vagrant_home = (ENV['VAGRANT_HOME'].to_s.split.join.length > 0) ? ENV['VAGRANT_HOME'] : "#{ENV['HOME']}/.vagrant.d"
+vagrant_dot  = (ENV['VAGRANT_DOTFILE_PATH'].to_s.split.join.length > 0) ? ENV['VAGRANT_DOTFILE_PATH'] : "#{dir}/.vagrant"
 
 require 'yaml'
 require "#{dir}/puphpet/ruby/deep_merge.rb"
@@ -28,7 +30,7 @@ Vagrant.configure('2') do |config|
 
   data['vm']['network']['forwarded_port'].each do |i, port|
     if port['guest'] != '' && port['host'] != ''
-      config.vm.network :forwarded_port, guest: port['guest'].to_i, host: port['host'].to_i
+      config.vm.network :forwarded_port, guest: port['guest'].to_i, host: port['host'].to_i, auto_correct: true
     end
   end
 
@@ -108,7 +110,7 @@ Vagrant.configure('2') do |config|
           group: sync_group, owner: sync_owner, mount_options: ['share']
       else
         config.vm.synced_folder "#{folder['source']}", "#{folder['target']}", id: "#{i}",
-          group: sync_group, owner: sync_owner, mount_options: ['dmode=775', 'fmode=764']
+          group: sync_group, owner: sync_owner, mount_options: ['dmode=775', 'fmode=774']
       end
     end
   end
@@ -243,12 +245,12 @@ Vagrant.configure('2') do |config|
   config.vm.provision :shell, :path => 'puphpet/shell/important-notices.sh'
 
   customKey  = "#{dir}/puphpet/files/dot/ssh/id_rsa"
-  vagrantKey = "#{dir}/.vagrant/machines/default/#{ENV['VAGRANT_DEFAULT_PROVIDER']}/private_key"
+  vagrantKey = "#{vagrant_dot}/machines/default/#{ENV['VAGRANT_DEFAULT_PROVIDER']}/private_key"
 
   if File.file?(customKey)
     config.ssh.private_key_path = [
       customKey,
-      "#{ENV['HOME']}/.vagrant.d/insecure_private_key"
+      "#{vagrant_home}/insecure_private_key"
     ]
 
     if File.file?(vagrantKey) and ! FileUtils.compare_file(customKey, vagrantKey)
@@ -292,5 +294,4 @@ Vagrant.configure('2') do |config|
     config.vagrant.host = data['vagrant']['host'].gsub(':', '').intern
   end
 end
-
 

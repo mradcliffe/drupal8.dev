@@ -19,20 +19,32 @@ module Puppet::Parser::Functions
     container = args[0]
 
     if (!container.is_a?(Hash)) && (!container.is_a?(Array))
-      raise Puppet::ParseError, ("value_true(): first value must be an array, passed #{container.class}")
-    end
-
-    key = args[1]
-
-    if !container.has_key?(key)
       return false
     end
 
-    if (container[key].is_a?(Hash)) || (container[key].is_a?(Array))
-      return container[key].count > 0
+    keys = (args[1].is_a?(Array)) ? args[1] : [args[1]]
+
+    # If multiple values passed to check,
+    # all must pass truthyness check to return true
+    keys.each do |key|
+      if !container.has_key?(key)
+        return false
+      end
+
+      if (container[key].is_a?(Hash)) || (container[key].is_a?(Array))
+        if !(container[key].count > 0)
+          return false
+        end
+
+        next
+      end
+
+      if !(container[key].to_bool)
+        return false
+      end
     end
 
-    return container[key].to_bool
+    return true
 
   end
 end

@@ -3,6 +3,7 @@ if $php_values == undef { $php_values = hiera_hash('php', false) }
 if $hhvm_values == undef { $hhvm_values = hiera_hash('hhvm', false) }
 
 include puphpet::params
+include puphpet::apache::params
 
 if hash_key_equals($postgresql_values, 'install', 1) {
   if hash_key_equals($apache_values, 'install', 1)
@@ -47,7 +48,6 @@ if hash_key_equals($postgresql_values, 'install', 1) {
   create_resources('class', {
     'postgresql::server' => $postgresql_settings_server
   })
-
 
   Postgresql::Server::Role <| |>
   -> Postgresql::Server::Database <| |>
@@ -128,7 +128,7 @@ if hash_key_equals($postgresql_values, 'install', 1) {
   if hash_key_equals($postgresql_values, 'adminer', 1)
     and $postgresql_php_installed
   {
-    $postgre_apache_webroot = $puphpet::params::apache_webroot_location
+    $postgre_apache_webroot = $puphpet::apache::params::default_vhost_dir
     $postgre_nginx_webroot = $puphpet::params::nginx_webroot_location
 
     if hash_key_equals($apache_values, 'install', 1) {

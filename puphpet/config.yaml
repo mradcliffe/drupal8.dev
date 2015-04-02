@@ -4,22 +4,22 @@ vagrantfile-local:
         box: puphpet/debian75-x64
         box_url: puphpet/debian75-x64
         hostname: ''
-        memory: '512'
+        memory: '2048'
         cpus: '1'
         chosen_provider: virtualbox
         network:
             private_network: 192.168.56.101
             forwarded_port:
-                ISXV9JxYneVS:
+                qkXnDwxXUpKD:
                     host: '8080'
                     guest: '80'
-                HJ6eO0tstBmM:
+                eZJPF7m7IJ2w:
                     host: '4043'
                     guest: '443'
-                MizjsBbrWjpv:
+                chLUym9QR5z0:
                     host: '3306'
                     guest: '3306'
-                HFkRQ79ll0ZW:
+                Eo0GbbuQEYog:
                     host: '15432'
                     guest: '5432'
         post_up_message: 'Congratulations! You should setup your local hosts file with 192.168.56.101 drupal8.mysql.dev drupal8.pgsql.dev drupal8.sqlite.dev, and then you can browse to http://drupal8.mysql.dev to get started!'
@@ -41,15 +41,12 @@ vagrantfile-local:
                     - '--hiera_config /vagrant/puphpet/puppet/hiera.yaml'
                     - '--parser future'
         synced_folder:
-            bw5tqJkJNqha:
+            r8LFbJfVnY2g:
                 owner: ''
                 group: ''
                 source: www
                 target: /var/www
                 sync_type: rsync
-                mount_options:
-                    - dmode: 775
-                    - fmode: 664
                 rsync:
                     args:
                         - '-rtlDPvcz'
@@ -84,6 +81,7 @@ server:
     packages:
         - samba
         - vim
+        - postgresql-contrib
 users_groups:
     install: '1'
     groups: {  }
@@ -106,14 +104,15 @@ apache:
     modules:
         - rewrite
     vhosts:
-        mp5edcyvz0f4:
+        hcfedouptcif:
             servername: drupal8.mysql.dev
             serveraliases:
                 - www.drupal8.mysql.dev
             docroot: /var/www/drupal8.dev
             port: '80'
+            custom_fragment: ''
             directories:
-                fahdmvfm2rrd:
+                6lkgsxm4uhsr:
                     provider: directory
                     path: /var/www/drupal8.dev
                     options:
@@ -126,20 +125,19 @@ apache:
                         - all
                         - granted
                     custom_fragment: ''
-            engine: ''
-            custom_fragment: ''
             ssl_cert: ''
             ssl_key: ''
             ssl_chain: ''
             ssl_certs_dir: ''
-        jcvdfem8a7zc:
+        0nrosax43wdq:
             servername: drupal8.pgsql.dev
             serveraliases:
                 - www.drupal8.pgsql.dev
             docroot: /var/www/drupal8.dev
             port: '80'
+            custom_fragment: ''
             directories:
-                tomz1htp6l1v:
+                u9l1rrwc6jej:
                     provider: directory
                     path: /var/www/drupal8.dev
                     options:
@@ -152,20 +150,19 @@ apache:
                         - all
                         - granted
                     custom_fragment: ''
-            engine: ''
-            custom_fragment: ''
             ssl_cert: ''
             ssl_key: ''
             ssl_chain: ''
             ssl_certs_dir: ''
-        mtyffp9timpt:
+        dd0c2npj1yhu:
             servername: drupal8.sqlite.dev
             serveraliases:
                 - www.drupal8.sqlite.dev
             docroot: /var/www/drupal8.dev
             port: '80'
+            custom_fragment: ''
             directories:
-                dkby0sznubxo:
+                9tzhisfjszyk:
                     provider: directory
                     path: /var/www/drupal8.dev
                     options:
@@ -178,13 +175,10 @@ apache:
                         - all
                         - granted
                     custom_fragment: ''
-            engine: ''
-            custom_fragment: ''
             ssl_cert: ''
             ssl_key: ''
             ssl_chain: ''
             ssl_certs_dir: ''
-    mod_pagespeed: 0
 nginx:
     install: '0'
     settings:
@@ -193,7 +187,7 @@ nginx:
         proxy_buffers: '4 256k'
     upstreams: {  }
     vhosts:
-        ohkzat7dshn6:
+        yofbeppjgdh7:
             proxy: ''
             server_name: awesome.dev
             server_aliases:
@@ -210,7 +204,10 @@ nginx:
             ssl_port: ''
 php:
     install: '1'
-    version: '55'
+    settings:
+        version: '56'
+    fpm_settings:
+        port: 9000
     composer: '1'
     composer_home: ''
     modules:
@@ -228,7 +225,6 @@ php:
         error_reporting: '-1'
         memory_limit: 256M
         session.save_path: /var/lib/php/session
-    mod_php: 1
 hhvm:
     install: '0'
     nightly: 0
@@ -269,18 +265,19 @@ python:
 mysql:
     install: '1'
     settings:
-        override_options: {  }
+        version: '5.6'
         root_password: '123'
+        override_options: {  }
     adminer: 0
-    databases:
-        w7Flm8z46yji:
-            grant:
-                - ALL
+    users:
+        Hz0IgO90ZuR4:
             name: drupal8
-            host: localhost
-            user: drupal8
             password: drupal8
-            sql_file: ''
+    databases:
+        G6UE9ClMBE3K:
+            name: drupal8
+            sql: ''
+    grants: {  }
 postgresql:
     install: '1'
     settings:
@@ -288,29 +285,22 @@ postgresql:
             encoding: UTF8
             version: '9.1'
         server:
-            postgres_password: 'drupal8'
+            postgres_password: drupal8
     databases:
-        bFHgMnoAnG44:
+        qJINz7iiWWR3:
             dbname: drupal8
             owner: drupal8
     users:
-        1SaUhBzUai2q:
+        JqtZfW7u0qAh:
             username: drupal8
             password: drupal8
     grants: {  }
     adminer: 0
-mariadb:
-    install: '0'
-    settings:
-        override_options: {  }
-        root_password: '123'
-    adminer: 0
-    databases: {  }
 sqlite:
     install: '1'
     adminer: 0
     databases:
-        0SGo9sq7czdU:
+        VWMNThfRMEnq:
             name: drupal8
             owner: vagrant
             group: vagrant
@@ -320,6 +310,7 @@ mongodb:
     install: '0'
     settings:
         auth: 1
+        bind_ip: 127.0.0.1
         port: '27017'
     databases: {  }
 redis:

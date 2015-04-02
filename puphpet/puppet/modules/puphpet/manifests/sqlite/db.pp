@@ -19,13 +19,12 @@ define puphpet::sqlite::db (
     group   => $group,
     mode    => '0775',
     require => User[$owner]
+  } ->
+  sqlite::db { $name:
+    owner => $owner,
+    group => $group,
+    mode  => $mode
   }
-#->
-#  sqlite::db { $name:
-#    owner => $owner,
-#    group => $group,
-#    mode  => $mode
-#  }
 
   if $sql_file {
     $sqlite_db = "sqlite3 /var/lib/sqlite/${name}.db"
