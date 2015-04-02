@@ -58,6 +58,7 @@ vagrantfile-local:
                         - .vagrant/
                         - .git/
                         - 'sites/*/settings.php'
+                        - 'sites/*/services.yml'
                         - 'sites/*/files/'
                         - '.*.swp'
                         - node_modules

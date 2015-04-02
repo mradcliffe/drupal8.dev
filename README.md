@@ -51,3 +51,4 @@ vagrant up
 ## Troubleshooting
 
 * Issue with mailcatcher puppet and sqlite puppet reositories being incompatible?
+* Running Composer or using [Composer Manager](https://drupal.org/project/composer_manager) from within inside the VM not compatible with rsync `--delete` parameter. I recommend to try to setup so you can run Composer outside the VM and rsync files into it. This may mess with a git checkout of core.
