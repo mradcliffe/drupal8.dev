@@ -1,100 +1,188 @@
----
-vagrantfile-local:
+vagrantfile:
+    target: local
     vm:
-        box: puphpet/debian75-x64
-        box_url: puphpet/debian75-x64
-        hostname: ''
-        memory: '2048'
-        cpus: '1'
-        chosen_provider: virtualbox
-        network:
-            private_network: 192.168.56.101
-            forwarded_port:
-                qkXnDwxXUpKD:
-                    host: '8080'
-                    guest: '80'
-                eZJPF7m7IJ2w:
-                    host: '4043'
-                    guest: '443'
-                chLUym9QR5z0:
-                    host: '3306'
-                    guest: '3306'
-                Eo0GbbuQEYog:
-                    host: '15432'
-                    guest: '5432'
-        post_up_message: 'Congratulations! You should setup your local hosts file with 192.168.56.101 drupal8.mysql.dev drupal8.pgsql.dev drupal8.sqlite.dev, and then you can browse to http://drupal8.mysql.dev to get started!'
         provider:
-            virtualbox:
-                modifyvm:
-                    natdnshostresolver1: on
-            vmware:
-                numvcpus: 1
-            parallels:
-                cpus: 1
+            local:
+                box: puphpet/ubuntu1404-x64
+                box_url: puphpet/ubuntu1404-x64
+                box_version: '0'
+                chosen_virtualizer: virtualbox
+                virtualizers:
+                    virtualbox:
+                        modifyvm:
+                            natdnshostresolver1: false
+                        showgui: 0
+                    vmware:
+                        numvcpus: 1
+                    parallels:
+                        use_linked_clone: 0
+                        check_guest_tools: 0
+                        update_guest_tools: 0
+                machines:
+                    vflm_honzmxxw6qce:
+                        id: drupal8.dev
+                        network:
+                            private_network: 192.168.56.101
+                            forwarded_port:
+                                vflmnfp_j25i7ojjz3d5:
+                                    host: '9841'
+                                    guest: '22'
+                                vflmnfp_n7oo26des9a9:
+                                    host: '8080'
+                                    guest: '80'
+                                vflmnfp_tkts8kedgdle:
+                                    host: '4443'
+                                    guest: '443'
+                        hostname: drupal8.dev
+                        memory: '4096'
+                        cpus: '1'
         provision:
             puppet:
-                manifests_path: puphpet/puppet
-                manifest_file: site.pp
+                manifests_path: puphpet/puppet/manifests
                 module_path: puphpet/puppet/modules
                 options:
                     - '--verbose'
                     - '--hiera_config /vagrant/puphpet/puppet/hiera.yaml'
-                    - '--parser future'
         synced_folder:
-            r8LFbJfVnY2g:
-                owner: ''
-                group: ''
+            vflsf_r7tamzta07zq:
                 source: www
                 target: /var/www
                 sync_type: rsync
+                smb:
+                    smb_host: ''
+                    smb_username: ''
+                    smb_password: ''
+                    mount_options:
+                        dir_mode: '0775'
+                        file_mode: '0664'
                 rsync:
                     args:
-                        - '-rtlDPvcz'
+                        - '-rtlDPvc'
                         - '--delete'
                     exclude:
                         - .vagrant/
                         - .git/
+                        - 'sites/*/files/'
                         - 'sites/*/settings.php'
                         - 'sites/*/services.yml'
-                        - 'sites/*/files/'
-                        - '.*.swp'
-                        - node_modules
-                        - .sass-cache/
                     auto: 'true'
+                owner: www-data
+                group: www-data
         usable_port_range:
             start: 10200
             stop: 10500
+        post_up_message: ''
     ssh:
-        host: null
-        port: null
-        private_key_path: null
+        host: 'false'
+        port: 'false'
+        private_key_path: 'false'
         username: vagrant
-        guest_port: null
-        keep_alive: true
-        forward_agent: false
-        forward_x11: false
+        guest_port: 'false'
+        keep_alive: '1'
+        forward_agent: 'false'
+        forward_x11: 'false'
         shell: 'bash -l'
+        insert_key: 'false'
     vagrant:
         host: detect
+    proxy:
+        http: ''
+        https: ''
+        ftp: ''
+        no_proxy: ''
+        enabled: ''
 server:
     install: '1'
     packages:
-        - samba
         - vim
+        - samba
         - postgresql-contrib
 users_groups:
     install: '1'
     groups: {  }
     users: {  }
-cron:
+locale:
     install: '1'
-    jobs: {  }
+    settings:
+        default_locale: en_US.UTF-8
+        locales:
+            - en_GB.UTF-8
+            - en_US.UTF-8
+        timezone: UTC
 firewall:
     install: '1'
     rules: {  }
+cron:
+    install: '1'
+    jobs: {  }
+nginx:
+    install: '0'
+    settings:
+        default_vhost: 1
+        proxy_buffer_size: 128k
+        proxy_buffers: '4 256k'
+        proxy_connect_timeout: 600s
+        proxy_send_timeout: 600s
+        proxy_read_timeout: 600s
+        names_hash_bucket_size: 128
+    upstreams: {  }
+    vhosts:
+        nxv_97qmmfsfhshy:
+            server_name: awesome.dev
+            server_aliases:
+                - www.awesome.dev
+            www_root: /var/www/awesome
+            listen_port: '80'
+            index_files:
+                - index.html
+                - index.htm
+                - index.php
+            client_max_body_size: 1m
+            ssl: '0'
+            ssl_cert: ''
+            ssl_key: ''
+            ssl_port: '443'
+            ssl_protocols: ''
+            ssl_ciphers: ''
+            rewrite_to_https: '1'
+            spdy: '1'
+            locations:
+                nxvl_5brqggd445gy:
+                    location: /
+                    autoindex: 'off'
+                    internal: 'false'
+                    try_files:
+                        - $uri
+                        - $uri/
+                        - /index.php$is_args$args
+                    fastcgi: ''
+                    fastcgi_index: ''
+                    fastcgi_split_path: ''
+                    proxy: ''
+                    proxy_redirect: ''
+                nxvl_et5znwijn3jy:
+                    location: '~ \.php$'
+                    autoindex: 'off'
+                    internal: 'false'
+                    try_files:
+                        - $uri
+                        - $uri/
+                        - /index.php$is_args$args
+                    fastcgi: '127.0.0.1:9000'
+                    fastcgi_index: index.php
+                    fastcgi_split_path: '^(.+\.php)(/.*)$'
+                    fast_cgi_params_extra:
+                        - 'SCRIPT_FILENAME $request_filename'
+                        - 'APP_ENV dev'
+                    set:
+                        - '$path_info $fastcgi_path_info'
+                    proxy: ''
+                    proxy_redirect: ''
+    proxies: {  }
 apache:
     install: '1'
     settings:
+        version: 2.4
         user: www-data
         group: www-data
         default_vhost: true
@@ -102,18 +190,29 @@ apache:
         manage_group: false
         sendfile: 0
     modules:
+        - proxy_fcgi
         - rewrite
     vhosts:
-        hcfedouptcif:
+        av_byq2duv6m6g0:
             servername: drupal8.mysql.dev
             serveraliases:
                 - www.drupal8.mysql.dev
             docroot: /var/www/drupal8.dev
             port: '80'
+            setenv:
+                - 'APP_ENV dev'
+            setenvif:
+                - 'Authorization "(.*)" HTTP_AUTHORIZATION=$1'
             custom_fragment: ''
+            ssl: '0'
+            ssl_cert: ''
+            ssl_key: ''
+            ssl_chain: ''
+            ssl_certs_dir: ''
+            ssl_protocol: ''
+            ssl_cipher: ''
             directories:
-                6lkgsxm4uhsr:
-                    provider: directory
+                avd_15wyeraogscg:
                     path: /var/www/drupal8.dev
                     options:
                         - Indexes
@@ -122,23 +221,35 @@ apache:
                     allow_override:
                         - All
                     require:
-                        - all
-                        - granted
+                        - 'all granted'
                     custom_fragment: ''
-            ssl_cert: ''
-            ssl_key: ''
-            ssl_chain: ''
-            ssl_certs_dir: ''
-        0nrosax43wdq:
+                    files_match:
+                        avdfm_xjn1blw3b2la:
+                            path: \.php$
+                            sethandler: 'proxy:fcgi://127.0.0.1:9000'
+                            custom_fragment: ''
+                            provider: filesmatch
+                    provider: directory
+        av_t96p7hlaxdak:
             servername: drupal8.pgsql.dev
             serveraliases:
                 - www.drupal8.pgsql.dev
             docroot: /var/www/drupal8.dev
             port: '80'
+            setenv:
+                - 'APP_ENV dev'
+            setenvif:
+                - 'Authorization "(.*)" HTTP_AUTHORIZATION=$1'
             custom_fragment: ''
+            ssl: '0'
+            ssl_cert: ''
+            ssl_key: ''
+            ssl_chain: ''
+            ssl_certs_dir: ''
+            ssl_protocol: ''
+            ssl_cipher: ''
             directories:
-                u9l1rrwc6jej:
-                    provider: directory
+                avd_1isqa9ex4wjq:
                     path: /var/www/drupal8.dev
                     options:
                         - Indexes
@@ -147,23 +258,35 @@ apache:
                     allow_override:
                         - All
                     require:
-                        - all
-                        - granted
+                        - 'all granted'
                     custom_fragment: ''
-            ssl_cert: ''
-            ssl_key: ''
-            ssl_chain: ''
-            ssl_certs_dir: ''
-        dd0c2npj1yhu:
+                    files_match:
+                        avdfm_xjn1blw3b2la:
+                            path: \.php$
+                            sethandler: 'proxy:fcgi://127.0.0.1:9000'
+                            custom_fragment: ''
+                            provider: filesmatch
+                    provider: directory
+        av_r1ylffz3l8hi:
             servername: drupal8.sqlite.dev
             serveraliases:
                 - www.drupal8.sqlite.dev
             docroot: /var/www/drupal8.dev
             port: '80'
+            setenv:
+                - 'APP_ENV dev'
+            setenvif:
+                - 'Authorization "(.*)" HTTP_AUTHORIZATION=$1'
             custom_fragment: ''
+            ssl: '0'
+            ssl_cert: ''
+            ssl_key: ''
+            ssl_chain: ''
+            ssl_certs_dir: ''
+            ssl_protocol: ''
+            ssl_cipher: ''
             directories:
-                9tzhisfjszyk:
-                    provider: directory
+                avd_pnlln5sy0pem:
                     path: /var/www/drupal8.dev
                     options:
                         - Indexes
@@ -172,69 +295,48 @@ apache:
                     allow_override:
                         - All
                     require:
-                        - all
-                        - granted
+                        - 'all granted'
                     custom_fragment: ''
-            ssl_cert: ''
-            ssl_key: ''
-            ssl_chain: ''
-            ssl_certs_dir: ''
-nginx:
-    install: '0'
-    settings:
-        default_vhost: 1
-        proxy_buffer_size: 128k
-        proxy_buffers: '4 256k'
-    upstreams: {  }
-    vhosts:
-        yofbeppjgdh7:
-            proxy: ''
-            server_name: awesome.dev
-            server_aliases:
-                - www.awesome.dev
-            www_root: /var/www/awesome.dev
-            listen_port: '80'
-            index_files:
-                - index.html
-                - index.htm
-                - index.php
-            client_max_body_size: 1m
-            ssl_cert: ''
-            ssl_key: ''
-            ssl_port: ''
+                    files_match:
+                        avdfm_xjn1blw3b2la:
+                            path: \.php$
+                            sethandler: 'proxy:fcgi://127.0.0.1:9000'
+                            custom_fragment: ''
+                            provider: filesmatch
+                    provider: directory
 php:
     install: '1'
     settings:
         version: '56'
-    fpm_settings:
-        port: 9000
-    composer: '1'
-    composer_home: ''
     modules:
         php:
             - cli
             - intl
-            - mcrypt
-            - gd
             - curl
+            - gd
+            - mbstring
+            - opcache
+            - sqlite
+            - xml
         pear: {  }
-        pecl:
-            - pecl_http
+        pecl: {  }
     ini:
-        display_errors: On
+        display_errors: 'On'
         error_reporting: '-1'
-        memory_limit: 256M
         session.save_path: /var/lib/php/session
-hhvm:
-    install: '0'
-    nightly: 0
+        date.timezone: UTC
+    fpm_ini:
+        error_log: /var/log/php-fpm.log
+    fpm_pools:
+        phpfp_t3m8khm04f4y:
+            ini:
+                prefix: www
+                listen: '127.0.0.1:9000'
+                security.limit_extensions: .php
+                user: www-user
+                group: www-data
     composer: '1'
     composer_home: ''
-    settings:
-        host: '0'
-        port: '0'
-    ini: {  }
-    timezone: null
 xdebug:
     install: '1'
     settings:
@@ -244,100 +346,160 @@ xdebug:
         xdebug.remote_enable: '1'
         xdebug.remote_handler: dbgp
         xdebug.remote_port: '9000'
+blackfire:
+    install: '0'
+    settings:
+        server_id: ''
+        server_token: ''
+        agent:
+            http_proxy: ''
+            https_proxy: ''
+            log_file: stderr
+            log_level: '1'
+        php:
+            agent_timeout: '0.25'
+            log_file: ''
+            log_level: '1'
 xhprof:
     install: '0'
 wpcli:
     install: '0'
-    version: ''
+    version: v0.21.1
 drush:
     install: '1'
-    version: 7.0.0-alpha3
+    version: 8.0.3
 ruby:
     install: '1'
     versions: {  }
-nodejs:
-    install: '0'
-    npm_packages: {  }
 python:
     install: '1'
     packages: {  }
     versions: {  }
-mysql:
+nodejs:
+    install: '0'
+    settings:
+        version: '5'
+    npm_packages: {  }
+hhvm:
+    install: '0'
+    nightly: 0
+    composer: '1'
+    composer_home: ''
+    settings: {  }
+    server_ini:
+        hhvm.server.host: 127.0.0.1
+        hhvm.server.port: '9000'
+        hhvm.log.use_log_file: '1'
+        hhvm.log.file: /var/log/hhvm/error.log
+    php_ini:
+        display_errors: 'On'
+        error_reporting: '-1'
+        date.timezone: UTC
+mariadb:
     install: '1'
+    settings:
+        version: '10.1'
+        root_password: '123'
+        override_options: {  }
+    adminer: 0
+    users:
+        mariadbnu_fzfd9unkz8s3:
+            name: drupal8
+            password: drupal8
+    databases:
+        mariadbnd_7vad5lazub20:
+            name: drupal8
+            sql: ''
+    grants:
+        mariadbng_mj5ko9ant5v3:
+            user: drupal8
+            table: 'drupal8.*'
+            privileges:
+                - ALL
+mysql:
+    install: '0'
     settings:
         version: '5.6'
         root_password: '123'
         override_options: {  }
     adminer: 0
     users:
-        Hz0IgO90ZuR4:
-            name: drupal8
-            password: drupal8
+        mysqlnu_gs3gu0smfcjg:
+            name: dbuser
+            password: '123'
     databases:
-        G6UE9ClMBE3K:
-            name: drupal8
+        mysqlnd_tglew2eb8k6w:
+            name: dbname
             sql: ''
-    grants: {  }
+    grants:
+        mysqlng_qkas0o6zyyly:
+            user: dbuser
+            table: '*.*'
+            privileges:
+                - ALL
 postgresql:
     install: '1'
     settings:
         global:
             encoding: UTF8
-            version: '9.1'
+            version: '9.4'
         server:
             postgres_password: drupal8
     databases:
-        qJINz7iiWWR3:
+        postsqlnd_c7fidu6hlas0:
             dbname: drupal8
             owner: drupal8
     users:
-        JqtZfW7u0qAh:
+        postsqlnu_gc6whon8ghtk:
             username: drupal8
             password: drupal8
-    grants: {  }
+    grants:
+        postsqlng_aw4hth89obzc:
+            role: drupal8
+            db: drupal8
+            privilege:
+                - ALL
     adminer: 0
-sqlite:
-    install: '1'
-    adminer: 0
-    databases:
-        VWMNThfRMEnq:
-            name: drupal8
-            owner: vagrant
-            group: vagrant
-            mode: '775'
-            sql_file: ''
 mongodb:
     install: '0'
     settings:
-        auth: 1
         bind_ip: 127.0.0.1
         port: '27017'
+    globals:
+        version: 2.6.0
     databases: {  }
 redis:
     install: '0'
     settings:
-        conf_port: '6379'
-mailcatcher:
+        port: '6379'
+sqlite:
+    install: '1'
+    adminer: 0
+    databases:
+        sqlitenuad_byfh4e9zf51f:
+            name: drupal8
+            owner: www-data
+            group: www-data
+            sql_file: /var/lib/drupal8.sqlite
+mailhog:
     install: '1'
     settings:
         smtp_ip: 0.0.0.0
         smtp_port: 1025
         http_ip: 0.0.0.0
-        http_port: '1080'
-        mailcatcher_path: /usr/local/rvm/wrappers/default
-        from_email_method: inline
+        http_port: '8025'
+        path: /usr/local/bin/mailhog
 beanstalkd:
     install: '0'
     settings:
         listenaddress: 0.0.0.0
-        listenport: '13000'
+        listenport: '11300'
         maxjobsize: '65535'
         maxconnections: '1024'
         binlogdir: /var/lib/beanstalkd/binlog
         binlogfsync: null
         binlogsize: '10485760'
     beanstalk_console: 0
-    binlogdir: /var/lib/beanstalkd/binlog
 rabbitmq:
     install: '0'
     settings:
@@ -348,11 +510,14 @@ rabbitmq:
 elastic_search:
     install: '0'
     settings:
-        version: null
+        version: 2.1.0
         java_install: true
+    instances:
+        esi_amtb4d20qow6:
+            name: es-01
 solr:
     install: '0'
     settings:
-        version: ''
-        port: ''
+        version: 4.10.2
+        port: '8984'
 
