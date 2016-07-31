@@ -19,21 +19,21 @@ vagrantfile:
                         check_guest_tools: 0
                         update_guest_tools: 0
                 machines:
-                    vflm_honzmxxw6qce:
+                    vflm_garu4u28ayf6:
                         id: drupal8.dev
+                        hostname: drupal8.dev
                         network:
                             private_network: 192.168.56.101
                             forwarded_port:
-                                vflmnfp_j25i7ojjz3d5:
+                                vflmnfp_iwag104vftzp:
                                     host: '9841'
                                     guest: '22'
-                                vflmnfp_n7oo26des9a9:
+                                vflmnfp_c1ca5iipnfe4:
                                     host: '8080'
                                     guest: '80'
-                                vflmnfp_tkts8kedgdle:
+                                vflmnfp_i44t5kkc3so7:
                                     host: '4443'
                                     guest: '443'
-                        hostname: drupal8.dev
                         memory: '4096'
                         cpus: '1'
         provision:
@@ -44,7 +44,7 @@ vagrantfile:
                     - '--verbose'
                     - '--hiera_config /vagrant/puphpet/puppet/hiera.yaml'
         synced_folder:
-            vflsf_r7tamzta07zq:
+            vflsf_k6dkcully0r5:
                 source: www
                 target: /var/www
                 sync_type: rsync
@@ -90,7 +90,6 @@ vagrantfile:
         https: ''
         ftp: ''
         no_proxy: ''
-        enabled: ''
 server:
     install: '1'
     packages:
@@ -114,7 +113,16 @@ firewall:
     rules: {  }
 cron:
     install: '1'
-    jobs: {  }
+    jobs:
+        cj_hzq4e0402kn0:
+            name: ''
+            user: ''
+            command: ''
+            minute: ''
+            hour: ''
+            weekday: ''
+            month: ''
+            monthday: ''
 nginx:
     install: '0'
     settings:
@@ -127,7 +135,7 @@ nginx:
         names_hash_bucket_size: 128
     upstreams: {  }
     vhosts:
-        nxv_97qmmfsfhshy:
+        nxv_hh3aozabwg1s:
             server_name: awesome.dev
             server_aliases:
                 - www.awesome.dev
@@ -147,10 +155,8 @@ nginx:
             rewrite_to_https: '1'
             spdy: '1'
             locations:
-                nxvl_5brqggd445gy:
+                nxvl_ayn09aecp3rj:
                     location: /
-                    autoindex: 'off'
-                    internal: 'false'
                     try_files:
                         - $uri
                         - $uri/
@@ -160,10 +166,8 @@ nginx:
                     fastcgi_split_path: ''
                     proxy: ''
                     proxy_redirect: ''
-                nxvl_et5znwijn3jy:
+                nxvl_z1l0audysns3:
                     location: '~ \.php$'
-                    autoindex: 'off'
-                    internal: 'false'
                     try_files:
                         - $uri
                         - $uri/
@@ -193,7 +197,7 @@ apache:
         - proxy_fcgi
         - rewrite
     vhosts:
-        av_byq2duv6m6g0:
+        av_4efjwxj69cz8:
             servername: drupal8.mysql.dev
             serveraliases:
                 - www.drupal8.mysql.dev
@@ -212,7 +216,7 @@ apache:
             ssl_protocol: ''
             ssl_cipher: ''
             directories:
-                avd_15wyeraogscg:
+                avd_a4rf5ddsjico:
                     path: /var/www/drupal8.dev
                     options:
                         - Indexes
@@ -224,13 +228,13 @@ apache:
                         - 'all granted'
                     custom_fragment: ''
                     files_match:
-                        avdfm_xjn1blw3b2la:
+                        avdfm_tpr4soek9vqy:
                             path: \.php$
                             sethandler: 'proxy:fcgi://127.0.0.1:9000'
                             custom_fragment: ''
                             provider: filesmatch
                     provider: directory
-        av_t96p7hlaxdak:
+        av_x0h1nyp4ls3k:
             servername: drupal8.pgsql.dev
             serveraliases:
                 - www.drupal8.pgsql.dev
@@ -249,7 +253,7 @@ apache:
             ssl_protocol: ''
             ssl_cipher: ''
             directories:
-                avd_1isqa9ex4wjq:
+                avd_7v1xradws0ho:
                     path: /var/www/drupal8.dev
                     options:
                         - Indexes
@@ -261,13 +265,13 @@ apache:
                         - 'all granted'
                     custom_fragment: ''
                     files_match:
-                        avdfm_xjn1blw3b2la:
+                        avdfm_fv6p5k0iyqxo:
                             path: \.php$
                             sethandler: 'proxy:fcgi://127.0.0.1:9000'
                             custom_fragment: ''
                             provider: filesmatch
                     provider: directory
-        av_r1ylffz3l8hi:
+        av_4tqppa4eg442:
             servername: drupal8.sqlite.dev
             serveraliases:
                 - www.drupal8.sqlite.dev
@@ -286,7 +290,7 @@ apache:
             ssl_protocol: ''
             ssl_cipher: ''
             directories:
-                avd_pnlln5sy0pem:
+                avd_qgo1iqu29o7q:
                     path: /var/www/drupal8.dev
                     options:
                         - Indexes
@@ -298,12 +302,17 @@ apache:
                         - 'all granted'
                     custom_fragment: ''
                     files_match:
-                        avdfm_xjn1blw3b2la:
+                        avdfm_tckla6o1k2dh:
                             path: \.php$
                             sethandler: 'proxy:fcgi://127.0.0.1:9000'
                             custom_fragment: ''
                             provider: filesmatch
                     provider: directory
+letsencrypt:
+    install: '1'
+    settings:
+        email: ''
+    domains: {  }
 php:
     install: '1'
     settings:
@@ -328,7 +337,7 @@ php:
     fpm_ini:
         error_log: /var/log/php-fpm.log
     fpm_pools:
-        phpfp_t3m8khm04f4y:
+        phpfp_nno9rncgiata:
             ini:
                 prefix: www
                 listen: '127.0.0.1:9000'
@@ -367,7 +376,7 @@ wpcli:
     version: v0.21.1
 drush:
     install: '1'
-    version: 8.0.3
+    version: 8.0.5
 ruby:
     install: '1'
     versions: {  }
@@ -403,15 +412,15 @@ mariadb:
         override_options: {  }
     adminer: 0
     users:
-        mariadbnu_fzfd9unkz8s3:
+        mariadbnu_95zhurmt68sd:
             name: drupal8
             password: drupal8
     databases:
-        mariadbnd_7vad5lazub20:
+        mariadbnd_fsth17zps3k3:
             name: drupal8
             sql: ''
     grants:
-        mariadbng_mj5ko9ant5v3:
+        mariadbng_u7bs100slcvo:
             user: drupal8
             table: 'drupal8.*'
             privileges:
@@ -424,15 +433,15 @@ mysql:
         override_options: {  }
     adminer: 0
     users:
-        mysqlnu_gs3gu0smfcjg:
+        mysqlnu_0w5isu6eyg3s:
             name: dbuser
             password: '123'
     databases:
-        mysqlnd_tglew2eb8k6w:
+        mysqlnd_j78m8xap5jy0:
             name: dbname
             sql: ''
     grants:
-        mysqlng_qkas0o6zyyly:
+        mysqlng_0wm96ugs4q73:
             user: dbuser
             table: '*.*'
             privileges:
@@ -446,15 +455,15 @@ postgresql:
         server:
             postgres_password: drupal8
     databases:
-        postsqlnd_c7fidu6hlas0:
+        postsqlnd_tlair0b15a7i:
             dbname: drupal8
             owner: drupal8
     users:
-        postsqlnu_gc6whon8ghtk:
+        postsqlnu_b8qgkjqk36rf:
             username: drupal8
             password: drupal8
     grants:
-        postsqlng_aw4hth89obzc:
+        postsqlng_dymu4kh29emo:
             role: drupal8
             db: drupal8
             privilege:
@@ -476,7 +485,7 @@ sqlite:
     install: '1'
     adminer: 0
     databases:
-        sqlitenuad_byfh4e9zf51f:
+        sqlitenuad_cmb6xpz3opkk:
             name: drupal8
             owner: www-data
             group: www-data
@@ -513,7 +522,7 @@ elastic_search:
         version: 2.1.0
         java_install: true
     instances:
-        esi_amtb4d20qow6:
+        esi_1zpw05b47moe:
             name: es-01
 solr:
     install: '0'

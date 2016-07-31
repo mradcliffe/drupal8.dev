@@ -1,7 +1,1 @@
 puphpet/config-custom.yaml
-!www/tmp
-www
-index.html
-.vagrant
-.DS_store
-Thumbs.db
